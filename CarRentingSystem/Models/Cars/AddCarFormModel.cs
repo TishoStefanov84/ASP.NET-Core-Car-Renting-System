@@ -19,7 +19,7 @@
         [StringLength(
             int.MaxValue, 
             MinimumLength = CarDescripitonMinLength,
-            ErrorMessage = "The field Description must be a string with a minimum length of {2}.")]
+            ErrorMessage = "The field Description must be a text with a minimum length of {2}.")]
         public string Description { get; init; }
 
         [Display(Name = "Image Url")]
