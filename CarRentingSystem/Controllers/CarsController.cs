@@ -98,14 +98,14 @@
         {
             var userId = this.User.GetId();
 
-            if (!this.dealers.IsDealer(userId))
+            if (!this.dealers.IsDealer(userId) && !User.IsAdmin())
             {
                 return RedirectToAction(nameof(DealersController.Become), "Dealers");
             }
 
             var car = this.cars.Details(id);
 
-            if (car.UserId != userId)
+            if (car.UserId != userId && !User.IsAdmin())
             {
                 return Unauthorized();
             }
@@ -128,12 +128,12 @@
         {
             var dealerId = this.dealers.GetIdByUser(this.User.GetId());
 
-            if (dealerId == 0)
+            if (dealerId == 0 && !User.IsAdmin())
             {
                 return RedirectToAction(nameof(DealersController.Become), "Dealers");
             }
 
-            if (!this.cars.CategoryExists(car.CategoryId))
+            if (!this.cars.CategoryExists(car.CategoryId) && !User.IsAdmin())
             {
                 this.ModelState.AddModelError(nameof(car.CategoryId), "Category dose not exist.");
             }
