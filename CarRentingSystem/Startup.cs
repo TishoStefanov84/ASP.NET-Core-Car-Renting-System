@@ -3,10 +3,12 @@ namespace CarRentingSystem
     using CarRentingSystem.Data;
     using CarRentingSystem.Infrastructure;
     using CarRentingSystem.Services.Cars;
+    using CarRentingSystem.Services.Dealers;
     using CarRentingSystem.Services.Statistics;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -38,10 +40,14 @@ namespace CarRentingSystem
                 .AddEntityFrameworkStores<CarRentingDbContext>();
 
             services
-                .AddControllersWithViews();
+                .AddControllersWithViews(options =>
+                {
+                    options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
+                });
 
-            services.AddTransient<IStatisticsService, StatisticsService>();
             services.AddTransient<ICarService, CarService>();
+            services.AddTransient<IDealerService, DealerService>();
+            services.AddTransient<IStatisticsService, StatisticsService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
