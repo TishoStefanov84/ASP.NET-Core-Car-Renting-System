@@ -1,6 +1,7 @@
 ﻿namespace CarRentingSystem.Services.Cars
 {
     using CarRentingSystem.Models;
+    using CarRentingSystem.Services.Cars.Models;
     using System.Collections.Generic;
 
     public interface ICarService

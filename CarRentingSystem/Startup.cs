@@ -41,6 +41,8 @@ namespace CarRentingSystem
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<CarRentingDbContext>();
 
+            services.AddAutoMapper(typeof(Startup));
+
             services
                 .AddControllersWithViews(options =>
                 {
@@ -74,6 +76,7 @@ namespace CarRentingSystem
                 .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
+                    endpoints.MapDefaultAreaRoute();
                     endpoints.MapDefaultControllerRoute();
                     endpoints.MapRazorPages();
                 });
