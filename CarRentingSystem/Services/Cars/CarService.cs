@@ -5,6 +5,7 @@
     using CarRentingSystem.Data;
     using CarRentingSystem.Data.Models;
     using CarRentingSystem.Models;
+    using CarRentingSystem.Models.Home;
     using CarRentingSystem.Services.Cars.Models;
     using System.Collections.Generic;
     using System.Linq;
@@ -12,12 +13,12 @@
     public class CarService : ICarService
     {
         private readonly CarRentingDbContext data;
-        private readonly IMapper mapper;
+        private readonly IConfigurationProvider mapper;
 
         public CarService(CarRentingDbContext data, IMapper mapper)
         {
             this.data = data;
-            this.mapper = mapper;
+            this.mapper = mapper.ConfigurationProvider;
         }
 
         public CarQueryServiceModel All(
@@ -63,12 +64,20 @@
             };
         }
 
+        public IEnumerable<LatestCarServiceModel> Latest()
+            => this.data
+                .Cars
+                .OrderByDescending(c => c.Id)
+                .ProjectTo<LatestCarServiceModel>(this.mapper)
+                .Take(3)
+                .ToList();
+
 
         public CarDetailsServiceModel Details(int id)
             => this.data
             .Cars
             .Where(c => c.Id == id)
-            .ProjectTo<CarDetailsServiceModel>(this.mapper.ConfigurationProvider)
+            .ProjectTo<CarDetailsServiceModel>(this.mapper)
             .FirstOrDefault();
 
         public int Create(
