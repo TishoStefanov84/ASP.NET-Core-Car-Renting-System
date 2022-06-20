@@ -2,35 +2,47 @@
 {
     using CarRentingSystem.Models.Home;
     using CarRentingSystem.Services.Cars;
-    using CarRentingSystem.Services.Statistics;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Caching.Memory;
+    using System;
+    using System.Collections.Generic;
     using System.Linq;
 
     public class HomeController : Controller
     {
         private readonly ICarService cars;
-        private readonly IStatisticsService statistics;
+        private readonly IMemoryCache cache;
 
         public HomeController(
             ICarService cars,
-            IStatisticsService statistics)
+            IMemoryCache cache)
         {
             this.cars = cars;
-            this.statistics = statistics;
+            this.cache = cache;
         }
 
         public IActionResult Index()
         {
-            var latestCars = this.cars.Latest().ToList(); 
+            const string latestCarsCacheKey = "LatestCarsCacheKey";
 
-            var totalStatistics = this.statistics.Total();
+            var latestCars = this.cache.Get<List<LatestCarServiceModel>>(latestCarsCacheKey);
 
-            return View(new IndexViewModel
+            if (latestCars != null)
             {
-                TotalCars = totalStatistics.TotalCars,
-                TotalUsers = totalStatistics.TotalUsers,
-                Cars = latestCars.ToList()
-            });
+                latestCars = this.cars.Latest().ToList();
+            
+                var cacheOptionas = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
+            
+                this.cache.Set(latestCarsCacheKey, latestCars, cacheOptionas);
+            }
+
+            if (latestCars == null)
+            {
+                return View(new List<LatestCarServiceModel>());
+            }
+
+            return View(latestCars);
         }
 
         public IActionResult Error() 
