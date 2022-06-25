@@ -1,12 +1,14 @@
 ﻿namespace CarRentingSystem.Controllers
 {
     using AutoMapper;
-    using CarRentingSystem.Infrastructure;
+    using CarRentingSystem.Infrastructure.Extensions;
     using CarRentingSystem.Models.Cars;
     using CarRentingSystem.Services.Cars;
     using CarRentingSystem.Services.Dealers;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+
+    using static WebConstatnts;
 
     public class CarsController : Controller
     {
@@ -49,6 +51,18 @@
             return View(myCars);
         }
 
+        public IActionResult Details(int id, string information)
+        {
+            var car = this.cars.Details(id);
+
+            if (information != car.GetInformation())
+            {
+                return BadRequest();
+            }
+
+            return View(car);
+        }
+
         [Authorize]
         public IActionResult Add()
         {
@@ -86,7 +100,7 @@
                 return View(car);
             }
 
-            this.cars.Create(
+            var carId = this.cars.Create(
                 car.Brand,
                 car.Model,
                 car.Description,
@@ -95,7 +109,9 @@
                 car.CategoryId,
                 dealerId);
 
-            return RedirectToAction(nameof(All));
+            TempData[GlobalMessageKey] = "Your car was added and is waiting for approval!";
+
+            return RedirectToAction(nameof(Details), new { id = carId, information = car.GetInformation() });
         }
 
            
@@ -158,9 +174,12 @@
                 car.Description,
                 car.ImageUrl,
                 car.Year,
-                car.CategoryId);
+                car.CategoryId,
+                this.User.IsAdmin());
 
-            return RedirectToAction(nameof(All));
+            TempData[GlobalMessageKey] = $"Your car was edited{(this.User.IsAdmin() ? string.Empty : "and is waiting for approval")}!";
+
+            return RedirectToAction(nameof(Details), new { id, information = car.GetInformation() });
         }
 
     }

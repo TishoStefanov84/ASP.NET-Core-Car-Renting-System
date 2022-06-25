@@ -27,7 +27,7 @@
 
             var latestCars = this.cache.Get<List<LatestCarServiceModel>>(latestCarsCacheKey);
 
-            if (latestCars != null)
+            if (latestCars == null)
             {
                 latestCars = this.cars.Latest().ToList();
             
@@ -35,11 +35,6 @@
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
             
                 this.cache.Set(latestCarsCacheKey, latestCars, cacheOptionas);
-            }
-
-            if (latestCars == null)
-            {
-                return View(new List<LatestCarServiceModel>());
             }
 
             return View(latestCars);

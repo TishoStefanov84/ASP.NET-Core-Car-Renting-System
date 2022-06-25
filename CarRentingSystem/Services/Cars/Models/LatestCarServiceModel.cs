@@ -1,6 +1,8 @@
 ﻿namespace CarRentingSystem.Models.Home
 {
-    public class LatestCarServiceModel
+    using CarRentingSystem.Services.Cars.Models;
+
+    public class LatestCarServiceModel : ICarModel
     {
         public int Id { get; init; }
 
