@@ -8,6 +8,8 @@
     using System.Collections.Generic;
     using System.Linq;
 
+    using static WebConstatnts.Cache;
+
     public class HomeController : Controller
     {
         private readonly ICarService cars;
@@ -23,9 +25,7 @@
 
         public IActionResult Index()
         {
-            const string latestCarsCacheKey = "LatestCarsCacheKey";
-
-            var latestCars = this.cache.Get<List<LatestCarServiceModel>>(latestCarsCacheKey);
+            var latestCars = this.cache.Get<List<LatestCarServiceModel>>(LatestCarsCacheKey);
 
             if (latestCars == null)
             {
@@ -34,7 +34,7 @@
                 var cacheOptionas = new MemoryCacheEntryOptions()
                     .SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
             
-                this.cache.Set(latestCarsCacheKey, latestCars, cacheOptionas);
+                this.cache.Set(LatestCarsCacheKey, latestCars, cacheOptionas);
             }
 
             return View(latestCars);
